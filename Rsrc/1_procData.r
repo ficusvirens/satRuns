@@ -18,11 +18,11 @@ if(testRun){
 
 climID <- raster(climIDpath)
 climIDx <- crop(climID,rastX)
-plot(climIDx)
-plot(rastX,add=T)
+# plot(climIDx)
+# plot(rastX,add=T)
 climIDs <- resample(climIDx,rastX,method="ngb")
-writeRaster(climIDs,paste0(folderPath,"climIDs.tif"),overwrite=T)
-# climIDs <- raster(paste0(folderPath,"climIDs.tif"))
+writeRaster(climIDs,paste0(rasterPath,"climIDs.tif"),overwrite=T)
+# climIDs <- raster(paste0(rastersPath,"climIDs.tif"))
 rm(rastX)
 gc()
 
@@ -51,7 +51,7 @@ for(i in 1:length(fileNames)){
 ###attach weather ID
 dataX <- data.table(rasterToPoints(climIDs))
 data.all <- merge(data.all,dataX)
-setnames(data.all,c("x","y","ba","blp","dbh","v","h","pineP","spruceP","siteType","id"))
+setnames(data.all,c("x","y","ba","blp","dbh","v","h","pineP","spruceP","siteType","climID"))
 
 ##filter data 
 data.all <- data.all[!ba %in% baNA]
@@ -74,7 +74,7 @@ data.all <- data.all[, spruceP := spruceP * sprucePerConv]
 data.all <- data.all[, siteType := siteTypeConv]
 
 ####group pixels by same values
-data.all[, segID := .GRP, by = .(ba, blp,dbh, h, pineP, spruceP, siteType, id)]
+data.all[, segID := .GRP, by = .(ba, blp,dbh, h, pineP, spruceP, siteType, climID)]
 data.all[,clCut:=0]
 
 #####I'm excluding from the runs the areas that have been clearcutted and have ba=0 
@@ -105,7 +105,7 @@ data.all[, npix:=.N, segID]
 
 
 ####find unique initial conditions
-uniqueData <- unique(data.all[clCut==0,.(ba,blp,dbh,h,pineP,spruceP,siteType,N,id,segID,npix)])
+uniqueData <- unique(data.all[clCut==0,.(ba,blp,dbh,h,pineP,spruceP,siteType,N,climID,segID,npix)])
 # uniqueData[,N:=ba/(pi*(dbh/200)^2)]
 range(uniqueData$N)
 uniqueData[,area:=npix*resX^2/10000]
@@ -122,7 +122,7 @@ XYsegID <- data.all[,.(x,y,segID)]
 #   samplesX <- split(uniqueData, sample(1:nSample, nrow(uniqueData), replace=T))
 #   sampleX <- ops[[sampleID]]
 #   sampleX[,area := N*resX^2/10000]
-#   # sampleX[,id:=id]
+#   # sampleX[,id:=climID]
 # }
   
 nSamples <- ceiling(dim(uniqueData)[1]/maxSitesRun)

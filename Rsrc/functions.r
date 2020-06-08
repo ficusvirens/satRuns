@@ -3,14 +3,14 @@ create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0
   #domSPrun=1 initialize model only for dominant species 
   nSites <- nrow(data.sample)
   
-  ###site Info matrix. nrow = nSites, cols: 1 = siteID; 2 = id; 3=site type;
+  ###site Info matrix. nrow = nSites, cols: 1 = siteID; 2 = climID; 3=site type;
   ###4 = nLayers; 5 = nSpecies;
   ###6=SWinit;   7 = CWinit; 8 = SOGinit; 9 = Sinit
   
   siteInfo <- matrix(c(NA,NA,NA,160,0,0,20,3,3,413,0.45,0.118),nSites,12,byrow = T)
   #siteInfo <- matrix(c(NA,NA,NA,3,3,160,0,0,20),nSites,9,byrow = T)
-  siteInfo[,1] <- 1:nSites
-  siteInfo[,2] <- as.numeric(data.sample[,id])
+  siteInfo[,1] <- data.sample$segID
+  siteInfo[,2] <- as.numeric(data.sample[,climID])
   siteInfo[,3] <- data.sample[,siteType]
   
   # litterSize <- matrix(0,3,3)
@@ -120,10 +120,10 @@ create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0
   NoSpruce <- which(initVar[,5,2]==0.)
   NoDecid <- which(initVar[,5,3]==0.)
   
-  siteInfo[NoPine,8] <- siteInfo[NoPine,8] - 1
-  siteInfo[NoSpruce,8] <- siteInfo[NoSpruce,8] - 1
-  siteInfo[NoDecid,8] <- siteInfo[NoDecid,8] - 1
-  
+  siteInfo[NoPine,8:9] <- siteInfo[NoPine,8:9] - 1
+  siteInfo[NoSpruce,8:9] <- siteInfo[NoSpruce,8:9] - 1
+  siteInfo[NoDecid,8:9] <- siteInfo[NoDecid,8:9] - 1
+
   #siteInfo[NoPine,4] <- siteInfo[NoPine,4] - 1
   #siteInfo[NoSpruce,4] <- siteInfo[NoSpruce,4] - 1
   #siteInfo[NoDecid,4] <- siteInfo[NoDecid,4] - 1
@@ -135,15 +135,15 @@ create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0
   
   nLay1 <- which(siteInfo[,8]==1)
   nLay2 <- which(siteInfo[,8]==2)
-  initVar[nLay1,3:6,2:3] <- 0
-  initVar[nLay2,3:6,3] <- 0
+  initVar[nLay1,3:7,2:3] <- 0
+  initVar[nLay2,3:7,3] <- 0
   # initVar[which(initVar[,5,1]==0.),,1] <- initVar[which(initVar[,5,1]==0.),,2]
   # initVar[which(initVar[,5,1]==0.),,2] <- initVar[which(initVar[,5,1]==0.),,3]
   # initVar[which(initVar[,5,1]==0.),1,3] <- 1
   # initVar[which(initVar[,5,1]==0.),3:6,3] <- 0
   
   # if (FALSE) {
-  #   dat = dat[id %in% data.sample[, unique(id)]]
+  #   dat = dat[climID %in% data.sample[, unique(climID)]]
   #   
   #   if(rcps!= "CurrClim.rdata"){
   #     # dat[, pvm:= as.Date('1980-01-01') - 1 + rday ]
@@ -152,27 +152,28 @@ create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0
   #     dat = dat[Year >= startingYear]
   #     dat[DOY==366, DOY:=365]
   #   }
-  #   PARtran = t( dcast(dat[, list(id, rday, PAR)], rday ~ id,
+  #   PARtran = t( dcast(dat[, list(climID, rday, PAR)], rday ~ climID,
   #                      value.var="PAR")[, -1])
-  #   TAirtran = t( dcast(dat[, list(id, rday, TAir)], rday ~ id,
+  #   TAirtran = t( dcast(dat[, list(climID, rday, TAir)], rday ~ climID,
   #                       value.var="TAir")[, -1])
-  #   VPDtran = t( dcast(dat[, list(id, rday, VPD)], rday ~ id,
+  #   VPDtran = t( dcast(dat[, list(climID, rday, VPD)], rday ~ climID,
   #                      value.var="VPD")[, -1])
-  #   Preciptran = t( dcast(dat[, list(id, rday, Precip)], rday ~ id,
+  #   Preciptran = t( dcast(dat[, list(climID, rday, Precip)], rday ~ climID,
   #                         value.var="Precip")[, -1])
-  #   CO2tran = t( dcast(dat[, list(id, rday, CO2)], rday ~ id,
+  #   CO2tran = t( dcast(dat[, list(climID, rday, CO2)], rday ~ climID,
   #                      value.var="CO2")[, -1])
   # }
   siteInfo[, 2]  = match(as.numeric(siteInfo[, 2]), as.numeric(rownames(clim[[1]])))
-  # siteInfo[, 2]  = match(siteInfo[,2], unique(dat$id))
+  # siteInfo[, 2]  = match(siteInfo[,2], unique(dat$climID))
   
   # defaultThin=as.numeric(1-data.sample[, cons])
   # energyCut <- ClCut <- as.numeric(1-data.sample[, cons])
   ## Set to match climate data years
   initPrebas <- InitMultiSite(nYearsMS = rep(nYears,nSites),siteInfo=siteInfo,
                               # litterSize = litterSize,#pAWEN = parsAWEN,
-                              defaultThin = 0.,
-                              ClCut = 0., areas =areas,
+                              defaultThin = defaultThin,
+                              ClCut = ClCut,
+                              areas =areas,
                               # energyCut = energyCut, 
                               multiInitVar = as.array(initVar),
                               PAR = clim$PAR[, 1:(nYears*365)],
@@ -188,7 +189,7 @@ create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0
 
 
 yasso.mean.climate.f = function(dat, data.sample, startingYear, nYears){
-  dat = dat[id %in% data.sample[, unique(id)]]
+  dat = dat[climID %in% data.sample[, unique(climID)]]
   dat[, DOY:=rep(1:365, len=dim(dat)[1])]
   dat[, Year:=rep(1980:2099, each=365)]
   #dat[, Year:= as.numeric(format(pvm, "%Y"))]
@@ -198,12 +199,12 @@ yasso.mean.climate.f = function(dat, data.sample, startingYear, nYears){
   dat[, Mon:= as.numeric(format(pvm, "%m"))]
   #dat[DOY==366, DOY:=365]
   Tmean = dat[, mean(TAir), by = Year]
-  Tsum = dat[, sum(ifelse(TAir>5, TAir-5, 0)), by=.(id, Year)][, mean(V1), by=Year]
+  Tsum = dat[, sum(ifelse(TAir>5, TAir-5, 0)), by=.(climID, Year)][, mean(V1), by=Year]
   PAR = dat[, mean(PAR), by = Year]
   VPD = dat[, mean(VPD), by = Year]
   CO2 = dat[, mean(CO2), by = Year]
-  Precip = dat[, sum(Precip), by = .(id, Year)][, mean(V1), by=Year]
-  Tampl = dat[, .(mean(TAir)), by = .(id, Year, Mon)][, (max(V1)-min(V1))/2, by=Year]
+  Precip = dat[, sum(Precip), by = .(climID, Year)][, mean(V1), by=Year]
+  Tampl = dat[, .(mean(TAir)), by = .(climID, Year, Mon)][, (max(V1)-min(V1))/2, by=Year]
   
   out = cbind(Tmean, Precip[, -1], Tampl[, -1], CO2[, -1], PAR[, -1], VPD[, -1], Tsum[, -1])
   colnames(out) = c('Year','Tmean','Precip','Tampl', 'CO2', "PAR", "VPD", "Tsum5")
@@ -212,7 +213,7 @@ yasso.mean.climate.f = function(dat, data.sample, startingYear, nYears){
 
 
 prep.climate.f = function(dat, data.sample, startingYear, nYears){
-  dat = dat[id %in% data.sample[, unique(id)]]
+  dat = dat[climID %in% data.sample[, unique(climID)]]
   if(rcps== "CurrClim"){
     dat[, Year:= as.numeric(floor(rday/365)+1971)]
     dat1 = dat[Year >= startingYear]
@@ -225,8 +226,8 @@ prep.climate.f = function(dat, data.sample, startingYear, nYears){
       dat2 <- dat[Year %in% yearX,]
       dat2$Year <- newYears[match(dat2$Year,yearX)]
       dat <- rbind(dat1,dat2)
-      setorder(dat,id,Year,DOY)
-      dat[,rday:=1:(365*nYears),by=id]
+      setorder(dat,climID,Year,DOY)
+      dat[,rday:=1:(365*nYears),by=climID]
     }
 
   }else{
@@ -236,18 +237,18 @@ prep.climate.f = function(dat, data.sample, startingYear, nYears){
   dat = dat[Year >= startingYear]
   dat[DOY==366, DOY:=365]
   }
-  id = dat[,unique(id)]
-  PARtran = t( dcast(dat[, list(id, rday, PAR)], rday ~ id,
+  climID = dat[,unique(climID)]
+  PARtran = t( dcast(dat[, list(climID, rday, PAR)], rday ~ climID,
                      value.var="PAR")[, -1])
-  TAirtran = t( dcast(dat[, list(id, rday, TAir)], rday ~ id,
+  TAirtran = t( dcast(dat[, list(climID, rday, TAir)], rday ~ climID,
                       value.var="TAir")[, -1])
-  VPDtran = t( dcast(dat[, list(id, rday, VPD)], rday ~ id,
+  VPDtran = t( dcast(dat[, list(climID, rday, VPD)], rday ~ climID,
                      value.var="VPD")[, -1])
-  Preciptran = t( dcast(dat[, list(id, rday, Precip)], rday ~ id,
+  Preciptran = t( dcast(dat[, list(climID, rday, Precip)], rday ~ climID,
                         value.var="Precip")[, -1])
-  CO2tran = t( dcast(dat[, list(id, rday, CO2)], rday ~ id,
+  CO2tran = t( dcast(dat[, list(climID, rday, CO2)], rday ~ climID,
                      value.var="CO2")[, -1])
   list(PAR=PARtran, TAir=TAirtran, VPD=VPDtran, 
-       Precip=Preciptran, CO2=CO2tran,id=id)
+       Precip=Preciptran, CO2=CO2tran,climID=climID)
 }
 

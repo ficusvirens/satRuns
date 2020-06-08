@@ -2,12 +2,16 @@
 testRun = T ####set to TRUE to test the code on a small raster proportion
 fracTest <- 0.2 ###fraction of test area
 maxSitesRun <- 20000
-maxSitesRunTest <- 100
+maxSitesRunTest <- 1000
+saveVars <- c(1,11:13,17,30,43) ####select variables to save
 
 ####indicate rasterPath and climID path
-folderPath <- "C:/Users/minunno/Documents/research/assessCarbon/data/Finland/AC_training_FI_34VEQ/"
+generalPath <- "C:/Users/minunno/Documents/research/assessCarbon/data/Finland/AC_training_FI_34VEQ/"
 climIDpath <- "C:/Users/minunno/Documents/research/FinSeg/some stuff/climID10km.tif"
-procDataPath <- "C:/Users/minunno/Documents/research/assessCarbon/data/Finland/AC_training_FI_34VEQ/procData/"
+rasterPath <- paste0(generalPath,"rasters/")
+procDataPath <- paste0(generalPath,"procData/")
+outPath <- paste0(generalPath,"output/")
+initPrebasPath <- paste0(generalPath,"initPrebas/")
 startingYear <- 2016
 yearEnd <- 2024
 nYears <-  yearEnd - startingYear ## number of simulation years
@@ -17,18 +21,23 @@ resX <- 10 ### pixel resolution in meters
 
 ### define weather inputs (CurrClim, or climate models)
 rcps = "CurrClim"
+
+###set harvests
+defaultThin = 0.
+ClCut = 0.
+
 # climatepath = "/scratch/project_2000994/RCP/" ####on CSC
 climatepath = "C:/Users/minunno/Documents/research/extarctWeather/inputs/" #### local fm
 
 ####indicate raster files
-baRast <-  paste0(folderPath,"FI_34VEQ-2016_BA_10M_1CHS_8BITS.tif")
-blPerRast <- paste0(folderPath,"FI_34VEQ-2016_BLP_10M_1CHS_8BITS.tif")
-dbhRast <- paste0(folderPath,"FI_34VEQ-2016_DIA_10M_1CHS_8BITS.tif")
-vRast <- paste0(folderPath,"FI_34VEQ-2016_GSV_10M_1CHS_16BITS.tif")
-hRast <- paste0(folderPath,"FI_34VEQ-2016_HGT_10M_1CHS_16BITS.tif")
-pinePerRast <- paste0(folderPath,"FI_34VEQ-2016_P_pine_10M_1CHS_8BITS.tif")
-sprucePerRast <- paste0(folderPath,"FI_34VEQ-2016_P_spruce_10M_1CHS_8BITS.tif")
-siteTypeRast <- paste0(folderPath,"FI_34VEQ-2016_SITE_10M_1CHS_8BITS.tif")
+baRast <-  paste0(rasterPath,"FI_34VEQ-2016_BA_10M_1CHS_8BITS.tif")
+blPerRast <- paste0(rasterPath,"FI_34VEQ-2016_BLP_10M_1CHS_8BITS.tif")
+dbhRast <- paste0(rasterPath,"FI_34VEQ-2016_DIA_10M_1CHS_8BITS.tif")
+vRast <- paste0(rasterPath,"FI_34VEQ-2016_GSV_10M_1CHS_16BITS.tif")
+hRast <- paste0(rasterPath,"FI_34VEQ-2016_HGT_10M_1CHS_16BITS.tif")
+pinePerRast <- paste0(rasterPath,"FI_34VEQ-2016_P_pine_10M_1CHS_8BITS.tif")
+sprucePerRast <- paste0(rasterPath,"FI_34VEQ-2016_P_spruce_10M_1CHS_8BITS.tif")
+siteTypeRast <- paste0(rasterPath,"FI_34VEQ-2016_SITE_10M_1CHS_8BITS.tif")
 
 ####set values for NAs and convert factor for prebas units
 baNA <- c(253:255); baConv<- 1
