@@ -6,8 +6,8 @@ require(sm)
 require(rgdal)
 
 if (!require(Rprebasso)) {
-  # devtools::install_github("checcomi/Rprebasso", force=TRUE,ref="newVersion")
-  # devtools::install_github("checcomi/Rprebasso", ref="master")
+  # devtools::install_github("ForModLabUHel/Rprebasso", force=TRUE,ref="newVersion")
+  # devtools::install_github("ForModLabUHel/Rprebasso", ref="master")
   #install.packages("C:/Users/peltonie/Downloads/prebassoInprog-master (3)/prebassoInprog-master",  type="source", repos=NULL)
   require(Rprebasso)
 }
