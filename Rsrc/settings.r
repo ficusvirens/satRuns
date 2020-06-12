@@ -20,11 +20,12 @@ domSPrun = 0.
 resX <- 10 ### pixel resolution in meters
 
 ### define weather inputs (CurrClim, or climate models)
-rcps = "CurrClim"
+weather = "CurrClim"
 
 ###set harvests
 defaultThin = 0.
 ClCut = 0.
+harvscen = "NoHarv"
 
 # climatepath = "/scratch/project_2000994/RCP/" ####on CSC
 climatepath = "C:/Users/minunno/Documents/research/extarctWeather/inputs/" #### local fm
@@ -56,5 +57,8 @@ initDBH <- 0.5
 initN <- 2200
 initBA <- pi*(initDBH/200)^2*initN
 
+#####settings for data extraction
+varDT <- c(44,30)   ####variables to extract in DT
+layerDT <- "tot" ###layerID to report in data.tables, if layerDT==tot the totals of all layers is provided
 
 #####end Settings####

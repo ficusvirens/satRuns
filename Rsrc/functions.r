@@ -1,3 +1,6 @@
+library(Rprebasso)
+
+####function to initialize the model
 create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0,domSPrun=0) { # dat = climscendataset
   #domSPrun=0 initialize model for mixed forests according to data inputs 
   #domSPrun=1 initialize model only for dominant species 
@@ -145,7 +148,7 @@ create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0
   # if (FALSE) {
   #   dat = dat[climID %in% data.sample[, unique(climID)]]
   #   
-  #   if(rcps!= "CurrClim.rdata"){
+  #   if(weather!= "CurrClim.rdata"){
   #     # dat[, pvm:= as.Date('1980-01-01') - 1 + rday ]
   #     # dat[, DOY:= as.numeric(format(pvm, "%j"))]
   #     dat[, Year:= as.numeric(floor(rday/366)+1971)]
@@ -214,7 +217,7 @@ yasso.mean.climate.f = function(dat, data.sample, startingYear, nYears){
 
 prep.climate.f = function(dat, data.sample, startingYear, nYears){
   dat = dat[climID %in% data.sample[, unique(climID)]]
-  if(rcps== "CurrClim"){
+  if(weather== "CurrClim"){
     dat[, Year:= as.numeric(floor(rday/365)+1971)]
     dat1 = dat[Year >= startingYear]
     if(nYears>length(unique(dat1$Year))){
@@ -252,3 +255,50 @@ prep.climate.f = function(dat, data.sample, startingYear, nYears){
        Precip=Preciptran, CO2=CO2tran,climID=climID)
 }
 
+
+##function to compile all data and create data.table 
+createDT <- function(climate, management,variable, layer,startingYear){
+  
+  files <- list.files(path= "output/")#,pattern = paste0("year",startingYear,"_"))
+  
+  # files2 <- intersect(list.files(path= "output/", pattern = climate), list.files(path= "output/",pattern = management))
+  # files=intersect(files,files2)
+  
+  for (ij in variable) assign(varNames[ij],data.table())
+  # segID <- areas <-numeric(0)
+  
+  for(i in 1:length(files)){
+    sampleID <- paste0("sample",i,".")
+    
+    fileX <- files[grep(sampleID,files,fixed = T)]
+    
+    load(paste0("output/",fileX))
+    
+    margin= 1:2#(length(dim(out$annual[,,variable,]))-1)
+    if(layer=="tot"){
+      for (ij in variable){ 
+        if(varNames[ij] %in% dimnames(out)$varX){
+          varX <- which(dimnames(out)$varX==varNames[ij])
+          assign(varNames[ij],data.table(rbind(eval(parse(text = varNames[ij])),
+                                               apply(out[,,varX,],margin,sum))))
+        }else{
+          print(paste(varNames[ij],"not saved"))
+        }
+      }
+    }else{
+      for(ij in variable){
+        if(varNames[ij] %in% dimnames(out)$varX){
+          varX <- which(dimnames(out)$varX==varNames[ij])
+          assign(varNames[ij],data.table(rbind(eval(parse(text = varNames[ij])),
+                                               out[,,varX,layer])))
+        }else{
+          print(paste(varNames[ij],"not saved"))
+        }
+      } 
+    }
+    print(i)
+  }
+  
+  for(ij in variable) save(list=varNames[ij],file=paste0("outDT/",varNames[ij],"_",management,"_",climate,
+                                                         "StartYear",startingYear,"layer",layer,".rdata"))
+}
