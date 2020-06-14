@@ -61,4 +61,8 @@ initBA <- pi*(initDBH/200)^2*initN
 varDT <- c(44,30)   ####variables to extract in DT
 layerDT <- "tot" ###layerID to report in data.tables, if layerDT==tot the totals of all layers is provided
 
+#####settings for raster creation
+varRast <- c(44,30)   ####variables to extract in DT
+yearOut <- startingYear + 1:3
+
 #####end Settings####

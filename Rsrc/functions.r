@@ -302,3 +302,35 @@ createDT <- function(climate, management,variable, layer,startingYear){
   for(ij in variable) save(list=varNames[ij],file=paste0("outDT/",varNames[ij],"_",management,"_",climate,
                                                          "StartYear",startingYear,"layer",layer,".rdata"))
 }
+
+
+# this function create raster in tif format from data.tables selecting one year or the average of a time priod if yearOut is a vector of years
+createTifFromDT <- function(climate, management, yearOut, varX, layerDT, stYear,XYsegID,crsX=NA){
+  simYear <- yearOut - stYear
+  fileDT=paste0("outDT/",varNames[varX],"_",management,"_",climate,
+                "StartYear",startingYear,"layer",layerDT,".rdata")
+  load(fileDT)
+  
+  outX <- t(get(varNames[varX]))
+  if (length(simYear)==1) outX <- outX[simYear,]
+  if (length(simYear)>1) outX <- colMeans(outX[simYear,],na.rm = T)
+  # outX <- data.table(cbind(segID,areas,outX))
+  outX <- data.table(cbind(segID,outX))
+  
+  setnames(outX,c("segID",varNames[varX]))
+  
+  setkey(XYsegID,segID)
+  setkey(outX,segID)
+  outXY <- merge(XYsegID,outX,all = T)
+  ###remove coordinates NAs
+  outXY <- outXY[!is.na(x)]
+  
+  ###create raster 
+  rastX <- rasterFromXYZ(outXY[,c("x","y",varNames[varX]),with=F])
+  crs(rastX) <- crsX
+  
+  rastName <- paste0("outRast/",climate,"_",management,"_var",varNames[varX],
+                     "_spec",layerDT,"_yearStart",stYear,".tif")
+  writeRaster(rastX,filename = rastName,overwrite=T)
+}
+
