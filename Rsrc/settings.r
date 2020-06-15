@@ -3,7 +3,7 @@ testRun = T ####set to TRUE to test the code on a small raster proportion
 fracTest <- 0.2 ###fraction of test area
 maxSitesRun <- 20000
 maxSitesRunTest <- 1000
-saveVars <- c(1,11:13,17,30,43) ####select variables to save
+saveVars <- c(1,11:13,17,30,43,44) ####select variables to save
 
 ####indicate rasterPath and climID path
 generalPath <- "C:/Users/minunno/Documents/research/assessCarbon/data/Finland/AC_training_FI_34VEQ/"

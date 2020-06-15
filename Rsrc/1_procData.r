@@ -1,9 +1,17 @@
 library(raster)
 library(rgdal)
 library(data.table)
-
 #####Run settings####
 source("Rsrc/settings.r")
+setwd(generalPath)
+if(!dir.exists("procData")) {
+  dir.create("procData")
+}
+if(!dir.exists(paste0("procData/",startingYear))) {
+  dir.create(paste0("procData/",startingYear))
+}
+
+
 
 
 ###extract CurrClim IDs

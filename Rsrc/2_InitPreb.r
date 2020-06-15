@@ -17,6 +17,10 @@ source("Rsrc/settings.r")
 
 source("Rsrc/functions.r")
 
+setwd(generalPath)
+if(!dir.exists("initPrebas")) {
+  dir.create("initPrebas")
+}
 
 load(paste0(procDataPath,startingYear,"/samples.rdata"))
 nSamples <- length(samples)
@@ -28,7 +32,7 @@ if(testRun){
 }
 
 
-for (rcpfile in rcps) { ## ---------------------------------------------
+for (rcpfile in weather) { ## ---------------------------------------------
   print(date())
   print(rcpfile)
   if(rcpfile=="CurrClim"){
