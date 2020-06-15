@@ -12,6 +12,7 @@ rasterPath <- paste0(generalPath,"rasters/")
 procDataPath <- paste0(generalPath,"procData/")
 outPath <- paste0(generalPath,"output/")
 initPrebasPath <- paste0(generalPath,"initPrebas/")
+
 startingYear <- 2016
 yearEnd <- 2024
 nYears <-  yearEnd - startingYear ## number of simulation years
