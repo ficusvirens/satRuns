@@ -6,9 +6,7 @@ require(sm)
 require(rgdal)
 
 if (!require(Rprebasso)) {
-  # devtools::install_github("checcomi/Rprebasso", force=TRUE,ref="newVersion")
-  # devtools::install_github("checcomi/Rprebasso", ref="master")
-  #install.packages("C:/Users/peltonie/Downloads/prebassoInprog-master (3)/prebassoInprog-master",  type="source", repos=NULL)
+  devtools::install_github("ForModLabUHel/Rprebasso", ref="v0.2.x")
   require(Rprebasso)
 }
 
@@ -17,6 +15,10 @@ source("Rsrc/settings.r")
 
 source("Rsrc/functions.r")
 
+setwd(generalPath)
+if(!dir.exists("initPrebas")) {
+  dir.create("initPrebas")
+}
 
 load(paste0(procDataPath,startingYear,"/samples.rdata"))
 nSamples <- length(samples)
@@ -28,7 +30,7 @@ if(testRun){
 }
 
 
-for (rcpfile in rcps) { ## ---------------------------------------------
+for (rcpfile in weather) { ## ---------------------------------------------
   print(date())
   print(rcpfile)
   if(rcpfile=="CurrClim"){
