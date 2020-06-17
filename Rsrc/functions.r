@@ -224,11 +224,12 @@ prep.climate.f = function(dat, data.sample, startingYear, nYears){
       nSampleYear <- nYears - length(unique(dat1$Year))
       set.seed(123)
       yearX <- sample(1971:min(startingYear,max(dat$Year)),nSampleYear,replace = F)
-      lastYear <- max(dat$Year)
+      lastYear <- max(dat$Year,startingYear)
       newYears <- lastYear + 1:length(yearX)
       dat2 <- dat[Year %in% yearX,]
       dat2$Year <- newYears[match(dat2$Year,yearX)]
       dat <- rbind(dat1,dat2)
+      dat[,DOY:=rep(1:365,nYears),by=climID]
       setorder(dat,climID,Year,DOY)
       dat[,rday:=1:(365*nYears),by=climID]
     }
