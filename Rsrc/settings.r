@@ -12,6 +12,9 @@ rasterPath <- paste0(generalPath,"rasters/")
 procDataPath <- paste0(generalPath,"procData/")
 outPath <- paste0(generalPath,"output/")
 initPrebasPath <- paste0(generalPath,"initPrebas/")
+# climatepath = "/scratch/project_2000994/RCP/" ####on CSC
+climatepath = "C:/Users/minunno/Documents/research/extarctWeather/inputs/" #### local fm
+
 
 startingYear <- 2016
 yearEnd <- 2024
@@ -28,8 +31,6 @@ defaultThin = 0.
 ClCut = 0.
 harvscen = "NoHarv"
 
-# climatepath = "/scratch/project_2000994/RCP/" ####on CSC
-climatepath = "C:/Users/minunno/Documents/research/extarctWeather/inputs/" #### local fm
 
 ####indicate raster files
 baRast <-  paste0(rasterPath,"FI_34VEQ-2016_BA_10M_1CHS_8BITS.tif")
