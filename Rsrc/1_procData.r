@@ -111,7 +111,7 @@ data.all[pineP == 0 & spruceP == 0 & blp ==0 & siteType >= 4, pineP:=1  ]
 ####Count segID pix
 data.all[, npix:=.N, segID]
 
-
+# uniqueData <- data.table()
 ####find unique initial conditions
 uniqueData <- unique(data.all[clCut==0,.(ba,blp,dbh,h,pineP,spruceP,siteType,N,climID,segID,npix)])
 # uniqueData[,N:=ba/(pi*(dbh/200)^2)]

@@ -218,7 +218,7 @@ yasso.mean.climate.f = function(dat, data.sample, startingYear, nYears){
 prep.climate.f = function(dat, data.sample, startingYear, nYears){
   dat = dat[climID %in% data.sample[, unique(climID)]]
   if(weather== "CurrClim"){
-    dat[, Year:= as.numeric(floor(rday/365)+1971)]
+    dat[, Year:= as.numeric(floor((rday-1)/365)+1971)]
     dat1 = dat[Year >= startingYear]
     if(nYears>length(unique(dat1$Year))){
       nSampleYear <- nYears - length(unique(dat1$Year))
