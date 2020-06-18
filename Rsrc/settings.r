@@ -1,9 +1,20 @@
+###choose PREBAS version
+vPREBAS <- "v0.2.x"   #### choose PREBAS verson to run the model  "master"
+
+
 #####Settings####
 testRun = T ####set to TRUE to test the code on a small raster proportion
 fracTest <- 0.2 ###fraction of test area
 maxSitesRun <- 20000
 maxSitesRunTest <- 1000
 saveVars <- c(1,11:13,17,30,43,44) ####select variables to save
+
+
+###library path in CSC project_2000994
+if(!testRun){
+  .libPaths(c("/projappl/project_2000994/project_rpackages", .libPaths()))
+  libpath <- .libPaths()[1]
+}
 
 ####indicate rasterPath and climID path
 generalPath <- "C:/Users/minunno/Documents/research/assessCarbon/data/Finland/AC_training_FI_34VEQ/"

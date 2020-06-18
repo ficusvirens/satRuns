@@ -5,15 +5,16 @@ library(data.table)
 require(sm)
 require(rgdal)
 
-if (!require(Rprebasso)) {
-  devtools::install_github("ForModLabUHel/Rprebasso", ref="v0.2.x")
-  require(Rprebasso)
-}
 
-### Run settings
+
+### Run settings & functions
 source("Rsrc/settings.r")
-
 source("Rsrc/functions.r")
+
+###check prebas version and install if needed
+devtools::install_github("ForModLabUHel/Rprebasso", ref=vPREBAS)
+require(Rprebasso)
+
 
 setwd(generalPath)
 if(!dir.exists("initPrebas")) {
