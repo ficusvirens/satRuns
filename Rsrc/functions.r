@@ -1,4 +1,3 @@
-library(Rprebasso)
 
 ####function to initialize the model
 create_prebas_input.f = function(r_no, clim, data.sample, nYears, startingYear=0,domSPrun=0) { # dat = climscendataset
